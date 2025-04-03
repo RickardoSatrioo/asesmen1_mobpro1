@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kalkulator</string>
+    <string name="instruction">Masukkan angka untuk dihitung</string>
+    <string name="value1">Masukan nilai pertama</string>
+    <string name="value2">Masukan nilai Kedua</string>
+    <string name="count">Hitung</string>
+    <string name="add">Tambah</string>
+    <string name="subtract">Kurang</string>
+    <string name="multiply">Kali</string>
+    <string name="divide">Bagi</string>
+</resources>
