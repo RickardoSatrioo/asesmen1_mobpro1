@@ -8,5 +8,8 @@
     <string name="subtract">Subtract</string>
     <string name="multiply">Multiply</string>
     <string name="divide">Divide</string>
+    <string name="result">Result:</string>
+    <string name="divisionError">Cannot be divided by 0</string>
+    <string name="selectOperation">Select operation</string>
 
 </resources>

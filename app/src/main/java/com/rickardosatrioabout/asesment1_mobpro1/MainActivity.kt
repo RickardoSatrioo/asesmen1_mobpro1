@@ -1,5 +1,6 @@
 package com.rickardosatrioabout.asesment1_mobpro1
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,13 +9,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,15 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Button
-import androidx.compose.material3.RadioButton
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
 
 class MainActivity : ComponentActivity() {
@@ -74,6 +76,8 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     var angka1 by remember { mutableStateOf("") }
     var angka2 by remember { mutableStateOf("") }
     var selectedOperation by remember { mutableStateOf(R.string.add) }
+    var resultText by remember { mutableStateOf("") }
+    var resultValue by remember { mutableStateOf("") }
 
     val operations = listOf(
         R.string.add,
@@ -81,6 +85,33 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
         R.string.multiply,
         R.string.divide
     )
+
+    val context = LocalContext.current
+
+    fun calculate() {
+        val num1 = angka1.toDoubleOrNull() ?: 0.0
+        val num2 = angka2.toDoubleOrNull() ?: 0.0
+
+        val operationResult = when (selectedOperation) {
+            R.string.add -> num1 + num2
+            R.string.subtract -> num1 - num2
+            R.string.multiply -> num1 * num2
+            R.string.divide -> if (num2 != 0.0) num1 / num2 else Double.NaN
+            else -> Double.NaN
+        }
+
+        if (operationResult.isNaN()) {
+            resultText = context.getString(R.string.divisionError)
+            resultValue = ""
+        } else {
+            resultText = context.getString(R.string.result)
+            resultValue = if (operationResult % 1 == 0.0) {
+                operationResult.toInt().toString()
+            } else {
+                operationResult.toString()
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -120,7 +151,6 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         )
 
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -141,16 +171,36 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
-
             }
-
         }
+
         Button(
-            onClick = {},
+            onClick = { calculate() },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
             Text(text = stringResource(R.string.count))
+        }
+
+        if (resultText.isNotEmpty()) {
+            Column(
+                modifier = Modifier.padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = resultText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                if (resultValue.isNotEmpty()) {
+                    Text(
+                        text = resultValue,
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }
