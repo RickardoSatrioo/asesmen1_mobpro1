@@ -31,6 +31,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.RadioButton
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
 
 class MainActivity : ComponentActivity() {
@@ -69,6 +71,14 @@ fun MainScreen() {
 fun CenteredLargeText(modifier: Modifier = Modifier) {
     var angka1 by remember { mutableStateOf("") }
     var angka2 by remember { mutableStateOf("") }
+    var selectedOperation by remember { mutableStateOf(R.string.add) }
+
+    val operations = listOf(
+        R.string.add,
+        R.string.subtract,
+        R.string.multiply,
+        R.string.divide
+    )
 
     Column(
         modifier = modifier
@@ -107,6 +117,30 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Radio Button Group Horizontal dengan teks di bawah
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            operations.forEach { operation ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                ) {
+                    RadioButton(
+                        selected = (selectedOperation == operation),
+                        onClick = { selectedOperation = operation },
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Text(
+                        text = stringResource(id = operation),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
