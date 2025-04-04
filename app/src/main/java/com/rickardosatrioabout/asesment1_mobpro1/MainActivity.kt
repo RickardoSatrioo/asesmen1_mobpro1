@@ -1,6 +1,5 @@
 package com.rickardosatrioabout.asesment1_mobpro1
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -37,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rickardosatrioabout.asesment1_mobpro1.navigation.SetupNavGraph
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Asesment1_Mobpro1Theme {
-                MainScreen()
+                SetupNavGraph()
             }
         }
     }
