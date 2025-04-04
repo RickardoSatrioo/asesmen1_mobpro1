@@ -1,5 +1,7 @@
 package com.rickardosatrioabout.asesment1_mobpro1
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,6 +47,16 @@ import androidx.navigation.compose.rememberNavController
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.Screen
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.SetupNavGraph
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
+
+private fun shareData(context: Context, message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    if (shareIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(shareIntent)
+    }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +108,7 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     var selectedOperation by rememberSaveable { mutableStateOf(R.string.add) }
     var resultText by rememberSaveable { mutableStateOf("") }
     var resultValue by rememberSaveable { mutableStateOf("") }
+
 
     val operations = listOf(
         R.string.add,
@@ -217,6 +230,18 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
+                }
+                Button(
+                    onClick = {
+                        shareData(
+                            context = context,
+                            message = context.getString(R.string.share_template, resultValue)
+                        )
+                    },
+                    modifier = Modifier.padding(top = 8.dp),
+                    contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+                ) {
+                    Text(text = stringResource(R.string.share))
                 }
             }
         }
