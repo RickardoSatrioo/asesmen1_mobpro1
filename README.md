@@ -1,4 +1,4 @@
-Asesment 1 Pemograman untuk prangkat bergerak 1
+Asesment 1 Pemograman untuk perangkat bergerak 1
 
 Nama : Rickardo Satrio
 

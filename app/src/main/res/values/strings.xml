@@ -11,5 +11,8 @@
     <string name="result">Result:</string>
     <string name="divisionError">Cannot be divided by 0</string>
     <string name="selectOperation">Select operation</string>
+    <string name="history">calculator history</string>
+    <string name="historyText">Mechanical calculators use gears and levers for mathematical calculations.\n\nInvented in the 16th century (Pascaline), evolved into Arithmometers by the 19th century.\n\nPopular in business and education, but replaced by electronic calculators in 1970s.\n\nNow valued as collectibles and appreciated for their mechanical beauty.</string>
+
 
 </resources>
