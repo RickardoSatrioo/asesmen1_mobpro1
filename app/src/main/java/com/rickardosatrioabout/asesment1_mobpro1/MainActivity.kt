@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.navigation.compose.rememberNavController
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.Screen
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.SetupNavGraph
@@ -105,7 +106,7 @@ fun MainScreen(navController: NavController) {
 fun CenteredLargeText(modifier: Modifier = Modifier) {
     var angka1 by rememberSaveable { mutableStateOf("") }
     var angka2 by rememberSaveable { mutableStateOf("") }
-    var selectedOperation by rememberSaveable { mutableStateOf(R.string.add) }
+    var selectedOperation by rememberSaveable { mutableIntStateOf(R.string.add) }
     var resultText by rememberSaveable { mutableStateOf("") }
     var resultValue by rememberSaveable { mutableStateOf("") }
 
