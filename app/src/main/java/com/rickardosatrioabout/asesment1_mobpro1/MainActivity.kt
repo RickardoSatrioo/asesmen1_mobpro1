@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -105,7 +106,11 @@ fun MainScreen(navController: NavController) {
 @Composable
 fun CenteredLargeText(modifier: Modifier = Modifier) {
     var angka1 by rememberSaveable { mutableStateOf("") }
+    var angka1Error by rememberSaveable { mutableStateOf(false) }
+
     var angka2 by rememberSaveable { mutableStateOf("") }
+    var angka2Error by rememberSaveable { mutableStateOf(false) }
+
     var selectedOperation by rememberSaveable { mutableIntStateOf(R.string.add) }
     var resultText by rememberSaveable { mutableStateOf("") }
     var resultValue by rememberSaveable { mutableStateOf("") }
@@ -163,6 +168,9 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
             value = angka1,
             onValueChange = { angka1 = it },
             label = { Text(text = stringResource(R.string.value1)) },
+            trailingIcon = { IconPicker(angka1Error) },
+            supportingText = { ErrorHint(angka1Error) },
+            isError = angka1Error,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -175,6 +183,9 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
             value = angka2,
             onValueChange = { angka2 = it },
             label = { Text(text = stringResource(R.string.value2)) },
+            trailingIcon = { IconPicker(angka2Error) },
+            supportingText = { ErrorHint(angka2Error) },
+            isError = angka2Error,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -207,7 +218,14 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
         }
 
         Button(
-            onClick = { calculate() },
+            onClick = {
+                angka1Error = (angka1 == "" )
+                angka2Error = (angka2 == "")
+                if (angka1Error || angka2Error) return@Button
+                else(
+                    calculate()
+                )
+            },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
         ) {
@@ -246,6 +264,20 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun IconPicker(isError: Boolean){
+    if (isError){
+        Icon(imageVector = Icons.Filled.Warning, contentDescription = null)
+    }
+}
+
+@Composable
+fun ErrorHint(isError: Boolean){
+    if (isError){
+        Text(text = stringResource(R.string.input_invalid))
     }
 }
 

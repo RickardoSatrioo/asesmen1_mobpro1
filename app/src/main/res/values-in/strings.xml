@@ -17,5 +17,6 @@
     <string name="back">Kembali</string>
     <string name="share">Bagikan</string>
     <string name="share_template">Hasil perhitungan : %1$s</string>
+    <string name="input_invalid">Tidak Boleh Kosong</string>
 
 </resources>
