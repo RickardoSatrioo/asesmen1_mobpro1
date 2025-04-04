@@ -29,7 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,11 +91,11 @@ fun MainScreen(navController: NavController) {
 
 @Composable
 fun CenteredLargeText(modifier: Modifier = Modifier) {
-    var angka1 by remember { mutableStateOf("") }
-    var angka2 by remember { mutableStateOf("") }
-    var selectedOperation by remember { mutableStateOf(R.string.add) }
-    var resultText by remember { mutableStateOf("") }
-    var resultValue by remember { mutableStateOf("") }
+    var angka1 by rememberSaveable { mutableStateOf("") }
+    var angka2 by rememberSaveable { mutableStateOf("") }
+    var selectedOperation by rememberSaveable { mutableStateOf(R.string.add) }
+    var resultText by rememberSaveable { mutableStateOf("") }
+    var resultValue by rememberSaveable { mutableStateOf("") }
 
     val operations = listOf(
         R.string.add,
