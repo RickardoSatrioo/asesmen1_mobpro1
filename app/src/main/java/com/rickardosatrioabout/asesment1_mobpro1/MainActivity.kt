@@ -116,6 +116,8 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     var resultText by rememberSaveable { mutableStateOf("") }
     var resultValue by rememberSaveable { mutableStateOf("") }
 
+    var noOperationSelected by rememberSaveable { mutableStateOf(false) }
+
     val operations = listOf(
         R.string.add,
         R.string.subtract,
@@ -127,9 +129,12 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
 
     fun calculate() {
         if (selectedOperations.isEmpty()) {
-            resultText = context.getString(R.string.no_operation_selected)
+            noOperationSelected = true
+            resultText = ""
             resultValue = ""
             return
+        } else {
+            noOperationSelected = false
         }
 
         val num1 = angka1.toDoubleOrNull() ?: 0.0
@@ -179,7 +184,7 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.instruction),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -232,19 +237,33 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                             } else {
                                 selectedOperations - operation
                             }
+                            noOperationSelected = false
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary,
-                            uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            uncheckedColor = if (noOperationSelected) MaterialTheme.colorScheme.error
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                            checkmarkColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Text(
                         text = stringResource(id = operation),
+                        color = if (noOperationSelected) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
+        }
+
+        if (noOperationSelected) {
+            Text(
+                text = stringResource(R.string.no_operation_selected),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
 
         Button(
@@ -264,7 +283,7 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
 
         if (resultText.isNotEmpty()) {
             Column(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
