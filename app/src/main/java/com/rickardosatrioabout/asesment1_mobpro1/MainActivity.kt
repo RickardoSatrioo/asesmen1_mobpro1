@@ -347,6 +347,10 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                 Button(
                     onClick = {
                         val message = buildString {
+
+                            append("${context.getString(R.string.value1_share)} $angka1\n")
+                            append("${context.getString(R.string.value2_share)} $angka2\n\n")
+
                             append(resultText)
                             append("\n")
                             selectedOperations.forEach { operation ->

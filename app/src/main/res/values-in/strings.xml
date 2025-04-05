@@ -24,5 +24,7 @@
     <string name="share">Bagikan</string>
     <string name="share_template">Hasil perhitungan : %1$s</string>
     <string name="input_invalid">Tidak Boleh Kosong</string>
+    <string name="value1_share">Nilai pertama :</string>
+    <string name="value2_share">Nilai Kedua :</string>
 
 </resources>

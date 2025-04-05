@@ -23,6 +23,8 @@
     <string name="share">Share</string>
     <string name="share_template">Calculation results : %1$s</string>
     <string name="input_invalid">Cannot be empty</string>
+    <string name="value1_share">First value :</string>
+    <string name="value2_share">Second value :</string>
 
 
 
