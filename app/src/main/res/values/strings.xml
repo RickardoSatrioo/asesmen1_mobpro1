@@ -8,7 +8,13 @@
     <string name="subtract">Subtract</string>
     <string name="multiply">Multiply</string>
     <string name="divide">Divide</string>
-    <string name="result">Result:</string>
+    <string name="no_operation_selected">Please select at least one operation</string>
+    <string name="calculation_results">Calculation Results</string>
+    <string name="error">Error</string>
+    <string name="result_add">Addition:</string>
+    <string name="result_subtract">Subtraction:</string>
+    <string name="result_multiply">Multiplication:</string>
+    <string name="result_divide">Division:</string>
     <string name="divisionError">Cannot be divided by 0</string>
     <string name="selectOperation">Select operation</string>
     <string name="history">calculator history</string>

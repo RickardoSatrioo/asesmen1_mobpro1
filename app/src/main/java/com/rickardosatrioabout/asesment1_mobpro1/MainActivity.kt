@@ -19,12 +19,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -44,11 +45,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.navigation.compose.rememberNavController
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.Screen
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.SetupNavGraph
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
+import java.util.Locale
 
 private fun shareData(context: Context, message: String) {
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -111,10 +112,9 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     var angka2 by rememberSaveable { mutableStateOf("") }
     var angka2Error by rememberSaveable { mutableStateOf(false) }
 
-    var selectedOperation by rememberSaveable { mutableIntStateOf(R.string.add) }
+    var selectedOperations by rememberSaveable { mutableStateOf(setOf<Int>()) }
     var resultText by rememberSaveable { mutableStateOf("") }
     var resultValue by rememberSaveable { mutableStateOf("") }
-
 
     val operations = listOf(
         R.string.add,
@@ -126,28 +126,48 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     fun calculate() {
+        if (selectedOperations.isEmpty()) {
+            resultText = context.getString(R.string.no_operation_selected)
+            resultValue = ""
+            return
+        }
+
         val num1 = angka1.toDoubleOrNull() ?: 0.0
         val num2 = angka2.toDoubleOrNull() ?: 0.0
 
-        val operationResult = when (selectedOperation) {
-            R.string.add -> num1 + num2
-            R.string.subtract -> num1 - num2
-            R.string.multiply -> num1 * num2
-            R.string.divide -> if (num2 != 0.0) num1 / num2 else Double.NaN
-            else -> Double.NaN
-        }
+        val results = mutableListOf<String>()
 
-        if (operationResult.isNaN()) {
-            resultText = context.getString(R.string.divisionError)
-            resultValue = ""
-        } else {
-            resultText = context.getString(R.string.result)
-            resultValue = if (operationResult % 1 == 0.0) {
-                operationResult.toInt().toString()
+        selectedOperations.forEach { operation ->
+            val operationResult = when (operation) {
+                R.string.add -> num1 + num2
+                R.string.subtract -> num1 - num2
+                R.string.multiply -> num1 * num2
+                R.string.divide -> if (num2 != 0.0) num1 / num2 else Double.NaN
+                else -> Double.NaN
+            }
+
+            val operationLabel = when (operation) {
+                R.string.add -> context.getString(R.string.result_add)
+                R.string.subtract -> context.getString(R.string.result_subtract)
+                R.string.multiply -> context.getString(R.string.result_multiply)
+                R.string.divide -> context.getString(R.string.result_divide)
+                else -> ""
+            }
+
+            if (!operationResult.isNaN()) {
+                val formattedResult = if (operationResult % 1 == 0.0) {
+                    operationResult.toInt().toString()
+                } else {
+                    String.format(Locale.US, "%.2f", operationResult)
+                }
+                results.add("$operationLabel $formattedResult")
             } else {
-                operationResult.toString()
+                results.add("$operationLabel ${context.getString(R.string.error)}")
             }
         }
+
+        resultText = context.getString(R.string.calculation_results)
+        resultValue = ""
     }
 
     Column(
@@ -204,9 +224,19 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
-                    RadioButton(
-                        selected = (selectedOperation == operation),
-                        onClick = { selectedOperation = operation },
+                    Checkbox(
+                        checked = selectedOperations.contains(operation),
+                        onCheckedChange = { isChecked ->
+                            selectedOperations = if (isChecked) {
+                                selectedOperations + operation
+                            } else {
+                                selectedOperations - operation
+                            }
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Text(
@@ -222,9 +252,9 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                 angka1Error = (angka1 == "" )
                 angka2Error = (angka2 == "")
                 if (angka1Error || angka2Error) return@Button
-                else(
+                else {
                     calculate()
-                )
+                }
             },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
@@ -241,23 +271,97 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                     text = resultText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    textAlign = TextAlign.Center
                 )
-                if (resultValue.isNotEmpty()) {
-                    Text(
-                        text = resultValue,
-                        style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    selectedOperations.forEach { operation ->
+                        val num1 = angka1.toDoubleOrNull() ?: 0.0
+                        val num2 = angka2.toDoubleOrNull() ?: 0.0
+
+                        val operationResult = when (operation) {
+                            R.string.add -> num1 + num2
+                            R.string.subtract -> num1 - num2
+                            R.string.multiply -> num1 * num2
+                            R.string.divide -> if (num2 != 0.0) num1 / num2 else Double.NaN
+                            else -> Double.NaN
+                        }
+
+                        val operationLabel = when (operation) {
+                            R.string.add -> context.getString(R.string.result_add)
+                            R.string.subtract -> context.getString(R.string.result_subtract)
+                            R.string.multiply -> context.getString(R.string.result_multiply)
+                            R.string.divide -> context.getString(R.string.result_divide)
+                            else -> ""
+                        }
+
+                        if (!operationResult.isNaN()) {
+                            val formattedResult = if (operationResult % 1 == 0.0) {
+                                operationResult.toInt().toString()
+                            } else {
+                                String.format(Locale.US, "%.2f", operationResult)
+                            }
+                            Text(
+                                text = "$operationLabel $formattedResult",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+                        } else {
+                            Text(
+                                text = "$operationLabel ${context.getString(R.string.error)}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 }
+
                 Button(
                     onClick = {
-                        shareData(
-                            context = context,
-                            message = context.getString(R.string.share_template, resultValue)
-                        )
+                        val message = buildString {
+                            append(resultText)
+                            append("\n")
+                            selectedOperations.forEach { operation ->
+                                val num1 = angka1.toDoubleOrNull() ?: 0.0
+                                val num2 = angka2.toDoubleOrNull() ?: 0.0
+                                val operationResult = when (operation) {
+                                    R.string.add -> num1 + num2
+                                    R.string.subtract -> num1 - num2
+                                    R.string.multiply -> num1 * num2
+                                    R.string.divide -> if (num2 != 0.0) num1 / num2 else Double.NaN
+                                    else -> Double.NaN
+                                }
+                                val operationLabel = when (operation) {
+                                    R.string.add -> context.getString(R.string.result_add)
+                                    R.string.subtract -> context.getString(R.string.result_subtract)
+                                    R.string.multiply -> context.getString(R.string.result_multiply)
+                                    R.string.divide -> context.getString(R.string.result_divide)
+                                    else -> ""
+                                }
+                                if (!operationResult.isNaN()) {
+                                    val formattedResult = if (operationResult % 1 == 0.0) {
+                                        operationResult.toInt().toString()
+                                    } else {
+                                        String.format(Locale.US, "%.2f", operationResult)
+                                    }
+                                    append("$operationLabel $formattedResult\n")
+                                } else {
+                                    append("$operationLabel ${context.getString(R.string.error)}\n")
+                                }
+                            }
+                        }
+                        shareData(context, message)
                     },
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 24.dp),
                     contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
                 ) {
                     Text(text = stringResource(R.string.share))
@@ -268,16 +372,24 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun IconPicker(isError: Boolean){
-    if (isError){
-        Icon(imageVector = Icons.Filled.Warning, contentDescription = null)
+fun IconPicker(isError: Boolean) {
+    if (isError) {
+        Icon(
+            imageVector = Icons.Filled.Warning,
+            contentDescription = "Error",
+            tint = MaterialTheme.colorScheme.error
+        )
     }
 }
 
 @Composable
-fun ErrorHint(isError: Boolean){
-    if (isError){
-        Text(text = stringResource(R.string.input_invalid))
+fun ErrorHint(isError: Boolean) {
+    if (isError) {
+        Text(
+            text = stringResource(R.string.input_invalid),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
 
