@@ -7,49 +7,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.Screen
 import com.rickardosatrioabout.asesment1_mobpro1.navigation.SetupNavGraph
 import com.rickardosatrioabout.asesment1_mobpro1.ui.theme.Asesment1_Mobpro1Theme
-import java.util.Locale
+import java.util.*
 
 private fun shareData(context: Context, message: String) {
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -75,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: androidx.navigation.NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -119,10 +100,10 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
     var noOperationSelected by rememberSaveable { mutableStateOf(false) }
 
     val operations = listOf(
-        R.string.add,
-        R.string.subtract,
-        R.string.multiply,
-        R.string.divide
+        OperationItem(R.string.add, R.drawable.tambah),
+        OperationItem(R.string.subtract, R.drawable.kurang),
+        OperationItem(R.string.multiply, R.drawable.kali),
+        OperationItem(R.string.divide, R.drawable.bagi)
     )
 
     val context = LocalContext.current
@@ -224,36 +205,19 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             operations.forEach { operation ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    Checkbox(
-                        checked = selectedOperations.contains(operation),
-                        onCheckedChange = { isChecked ->
-                            selectedOperations = if (isChecked) {
-                                selectedOperations + operation
-                            } else {
-                                selectedOperations - operation
-                            }
-                            noOperationSelected = false
-                        },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.primary,
-                            uncheckedColor = if (noOperationSelected) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                            checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Text(
-                        text = stringResource(id = operation),
-                        color = if (noOperationSelected) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
+                OperationCheckbox(
+                    operation = operation,
+                    isSelected = selectedOperations.contains(operation.labelRes),
+                    onSelectionChange = { isChecked ->
+                        selectedOperations = if (isChecked) {
+                            selectedOperations + operation.labelRes
+                        } else {
+                            selectedOperations - operation.labelRes
+                        }
+                        noOperationSelected = false
+                    },
+                    isError = noOperationSelected
+                )
             }
         }
 
@@ -268,7 +232,7 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                angka1Error = (angka1 == "" )
+                angka1Error = (angka1 == "")
                 angka2Error = (angka2 == "")
                 if (angka1Error || angka2Error) return@Button
                 else {
@@ -347,10 +311,8 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
                 Button(
                     onClick = {
                         val message = buildString {
-
                             append("${context.getString(R.string.value1_share)} $angka1\n")
                             append("${context.getString(R.string.value2_share)} $angka2\n\n")
-
                             append(resultText)
                             append("\n")
                             selectedOperations.forEach { operation ->
@@ -393,6 +355,55 @@ fun CenteredLargeText(modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun OperationCheckbox(
+    operation: OperationItem,
+    isSelected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
+    isError: Boolean
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 8.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = onSelectionChange,
+                modifier = Modifier.size(48.dp),
+                interactionSource = remember { MutableInteractionSource() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    uncheckedColor = if (isError) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    checkmarkColor = MaterialTheme.colorScheme.primary
+                )
+            )
+            if (isSelected) {
+                Icon(
+                    painter = painterResource(id = operation.iconRes),
+                    contentDescription = stringResource(id = operation.labelRes),
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        Text(
+            text = stringResource(id = operation.labelRes),
+            color = if (isError) MaterialTheme.colorScheme.error
+            else MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+    }
+}
+
+data class OperationItem(
+    val labelRes: Int,
+    val iconRes: Int
+)
 
 @Composable
 fun IconPicker(isError: Boolean) {
