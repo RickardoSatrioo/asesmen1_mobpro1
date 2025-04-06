@@ -19,12 +19,14 @@
     <string name="divisionError">Tidak bisa dibagi 0</string>
     <string name="selectOperation">Pilih Oprasi</string>
     <string name="history">Sejarah Kalkulator</string>
-    <string name="historyText">Kalkulator mekanis menggunakan roda gigi dan tuas untuk perhitungan matematis.\nDitemukan abad ke-16 (Pascaline), berkembang hingga Arithmometers (abad ke-19).\nPopuler di bisnis dan pendidikan, tapi tergantikan oleh kalkulator elektronik tahun 1970.\nKini menjadi barang koleksi dan diapresiasi karena keindahan mekanisnya.</string>
+    <string name="historyText">Kalkulator mekanis menggunakan roda gigi dan tuas untuk perhitungan matematis.\n\nDitemukan abad ke-16 (Pascaline), berkembang hingga Arithmometers (abad ke-19).\n\nPopuler di bisnis dan pendidikan, tapi tergantikan oleh kalkulator elektronik tahun 1970.\n\nKini menjadi barang koleksi dan diapresiasi karena keindahan mekanisnya.</string>
     <string name="back">Kembali</string>
     <string name="share">Bagikan</string>
     <string name="share_template">Hasil perhitungan : %1$s</string>
     <string name="input_invalid">Tidak Boleh Kosong</string>
     <string name="value1_share">Nilai pertama :</string>
     <string name="value2_share">Nilai Kedua :</string>
+    <string name="kalkulator_image_desc">Gambar Kalkulator</string>
+
 
 </resources>
